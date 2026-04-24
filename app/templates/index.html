@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SpaceView Studio</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(180deg, #0b1020 0%, #11182d 100%);
+            color: #f3f6ff;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 40px auto;
+            padding: 24px;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 18px;
+            padding: 24px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+            backdrop-filter: blur(6px);
+        }
+
+        h1 {
+            margin-top: 0;
+            margin-bottom: 10px;
+            font-size: 2rem;
+        }
+
+        .subtitle {
+            margin-top: 0;
+            margin-bottom: 24px;
+            color: #c7d2ff;
+        }
+
+        .input-row {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 18px;
+        }
+
+        input[type="text"] {
+            flex: 1;
+            min-width: 260px;
+            padding: 14px 16px;
+            border-radius: 12px;
+            border: 1px solid #314066;
+            background: #0f1730;
+            color: #ffffff;
+            font-size: 1rem;
+            outline: none;
+        }
+
+        input[type="text"]:focus {
+            border-color: #7ea6ff;
+            box-shadow: 0 0 0 3px rgba(126, 166, 255, 0.18);
+        }
+
+        button {
+            padding: 12px 16px;
+            border: none;
+            border-radius: 12px;
+            background: #6a8dff;
+            color: white;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: transform 0.15s ease, opacity 0.15s ease;
+        }
+
+        button:hover {
+            opacity: 0.95;
+            transform: translateY(-1px);
+        }
+
+        button.secondary {
+            background: #1d294a;
+            border: 1px solid #314066;
+        }
+
+        .preset-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .status-box {
+            margin: 18px 0;
+            padding: 12px 14px;
+            border-radius: 12px;
+            background: rgba(126, 166, 255, 0.12);
+            color: #dbe5ff;
+            min-height: 24px;
+        }
+
+        .gallery {
+            margin-top: 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 16px;
+        }
+
+        .gallery img {
+            width: 100%;
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
+            display: none;
+        }
+
+        .footer-note {
+            margin-top: 18px;
+            color: #aeb9dc;
+            font-size: 0.9rem;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 18px;
+            height: 18px;
+            border: 3px solid rgba(255, 255, 255, 0.25);
+            border-top-color: #ffffff;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            vertical-align: middle;
+            margin-right: 8px;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        @media (max-width: 640px) {
+            .container {
+                margin: 20px auto;
+                padding: 14px;
+            }
+
+            .card {
+                padding: 18px;
+            }
+
+            h1 {
+                font-size: 1.6rem;
+            }
+
+            button {
+                width: 100%;
+            }
+
+            .input-row {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <h1>SpaceView Studio</h1>
+            <p class="subtitle">
+                Generate space-themed artwork from a text prompt.
+            </p>
+
+            <div class="input-row">
+                <input
+                    type="text"
+                    id="promptInput"
+                    placeholder="e.g. futuristic Europa colony under a glowing nebula"
+                >
+                <button onclick="generateImage()">Generate Images</button>
+            </div>
+
+            <div>
+                <p>Prompt presets:</p>
+                <div class="preset-group">
+                    <button class="secondary" onclick="setPreset('space station near Saturn')">Saturn Station</button>
+                    <button class="secondary" onclick="setPreset('moon base under aurora sky')">Moon Base</button>
+                    <button class="secondary" onclick="setPreset('black hole observatory in deep space')">Black Hole</button>
+                    <button class="secondary" onclick="setPreset('futuristic Mars colony at sunset')">Mars Colony</button>
+                    <button class="secondary" onclick="setPreset('astronaut walking through crystal cave on Europa')">Europa Cave</button>
+                </div>
+            </div>
+
+            <div class="status-box" id="statusText">Ready.</div>
+
+            <div class="gallery" id="gallery"></div>
+
+            <p class="footer-note">
+                First generation may take longer because the model has to load.
+            </p>
+        </div>
+    </div>
+
+    <script>
+        function setPreset(text) {
+            document.getElementById("promptInput").value = text;
+        }
+
+        async function generateImage() {
+            const prompt = document.getElementById("promptInput").value.trim();
+            const statusText = document.getElementById("statusText");
+            const gallery = document.getElementById("gallery");
+
+            if (!prompt) {
+                alert("Please enter a prompt.");
+                return;
+            }
+
+            statusText.innerHTML = '<span class="loading"></span>Generating images...';
+            gallery.innerHTML = "";
+
+            try {
+                const response = await fetch("/generate?prompt=" + encodeURIComponent(prompt));
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.detail || "Generation failed.");
+                }
+
+                const data = await response.json();
+
+                for (const imageUrl of data.image_urls) {
+                    const img = document.createElement("img");
+                    img.src = imageUrl + "?t=" + new Date().getTime();
+                    img.alt = "Generated space artwork";
+                    img.style.display = "block";
+                    gallery.appendChild(img);
+                }
+
+                statusText.textContent = "Done. 3 images generated successfully.";
+            } catch (error) {
+                statusText.textContent = "Error: " + error.message;
+                console.error(error);
+            }
+        }
+    </script>
+</body>
+</html>
