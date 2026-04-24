@@ -43,7 +43,11 @@ spaceview-studio/
 ├── README.md
 └── requirements.txt
 
+# Demo UI:
+
 <img width="1124" height="786" alt="ui png" src="https://github.com/user-attachments/assets/79fca884-5d0f-4d6c-8768-abf612c9c2d8" />
+
+# Demo results:
 
 <img width="512" height="512" alt="1" src="https://github.com/user-attachments/assets/d489b0af-26ff-410f-99a2-3d0320a61bc1" />
 <img width="512" height="512" alt="5" src="https://github.com/user-attachments/assets/95f6c742-9f0c-4a34-9985-5c2143e53bc3" />
