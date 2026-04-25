@@ -26,23 +26,6 @@ Built as part of a hands-on AI portfolio focused on generative models, backend s
 - Pillow
 - Docker
 
-# Project Structure
-
-spaceview-studio/
-├── app/
-│   ├── __init__.py
-│   ├── generator.py
-│   ├── main.py
-│   ├── static/
-│   │   └── generated/
-│   └── templates/
-│       └── index.html
-├── .dockerignore
-├── .gitignore
-├── Dockerfile
-├── README.md
-└── requirements.txt
-
 # Demo UI:
 
 <img width="1124" height="786" alt="ui png" src="https://github.com/user-attachments/assets/79fca884-5d0f-4d6c-8768-abf612c9c2d8" />
